@@ -15,9 +15,9 @@ PAYMENT_INFO = """
 10 Credits = ₹30
 
 Payment Methods:
-UPI: [Add your UPI ID here]
-PhonePe: [Add number]
-Paytm: [Add number]
+UPI: https://t.me/Diffferentiator
+PhonePe: https://t.me/Diffferentiator
+Paytm: https://t.me/Diffferentiator
 
 After payment, send screenshot to admin for credit approval.
 """
