@@ -23,31 +23,47 @@ After payment, send screenshot to admin for credit approval.
 """
 
 WELCOME_MESSAGE = """
-👋 Welcome to OSINT Bot!
+╔═══════════════════════════╗
+║   🔍 OSINT LOOKUP BOT 🔍   ║
+╚═══════════════════════════╝
 
-This bot provides various data lookup services.
+Welcome to the most advanced OSINT data lookup service!
 
-🔹 Owner & Sudo: Free unlimited access
-🔹 Regular Users: Credit-based system
+🎯 Available Services:
+━━━━━━━━━━━━━━━━━━━━━
+📱 Aadhar Lookup
+📞 Number Info
+👨‍👩‍👧‍👦 Family Details
 
-Choose an option from below:
+💎 Access Levels:
+━━━━━━━━━━━━━━━━━━━━━
+👑 Owner & Sudo: Unlimited Free
+💰 Users: Credit-based (10 credits = ₹30)
+
+Choose an option from the menu below:
 """
 
 HELP_MESSAGE = """
-📖 Bot Commands:
+╔═════════════════════════╗
+║   📖 BOT COMMANDS 📖    ║
+╚═════════════════════════╝
 
-🔍 Data Lookup:
-/lookup1 - Data Lookup Service 1
-/lookup2 - Data Lookup Service 2  
-/lookup3 - Data Lookup Service 3
+🔍 LOOKUP SERVICES
+━━━━━━━━━━━━━━━━━━━━
+/aadhar - Aadhar to Details
+/num - Number Information
+/familyinfo - Family Details
 
-💰 Credits:
-/balance - Check your credit balance
-/buy - Purchase credits
+💰 CREDIT MANAGEMENT
+━━━━━━━━━━━━━━━━━━━━
+/balance - Check Balance
+/buy - Purchase Credits
 
-ℹ️ Info:
-/help - Show this message
-/start - Main menu
+ℹ️ GENERAL
+━━━━━━━━━━━━━━━━━━━━
+/start - Main Menu
+/help - This Help Message
 
-For support, contact admin.
+━━━━━━━━━━━━━━━━━━━━
+💬 Need Help? Contact Admin
 """
