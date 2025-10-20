@@ -11,8 +11,11 @@ from telegram.ext import (
 )
 from telegram.error import TelegramError
 import requests
+import urllib3
 from database import Database
 from config import *
+
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -369,25 +372,33 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text("🔍 Processing your query...")
         
         try:
+            final_url = api_config['url'].replace('{query}', text)
+            logger.info(f"Making API request to: {final_url}")
+            
             response = requests.get(
-                api_config['url'].replace('{query}', text),
-                timeout=10
+                final_url,
+                timeout=15,
+                verify=False
             )
+            
+            logger.info(f"API Response Status: {response.status_code}")
+            logger.info(f"API Response: {response.text[:200]}")
             
             if response.status_code == 200:
                 result_text = f"✅ Results for: {text}\n\n"
-                result_text += f"Response: {response.text[:500]}"
+                result_text += f"{response.text[:4000]}"
                 
                 if not has_free_access(user_id):
                     db.deduct_credits(user_id, CREDITS_PER_QUERY, f"Lookup {lookup_type}")
                     remaining = db.get_credits(user_id)
                     result_text += f"\n\n💰 Credits remaining: {remaining}"
             else:
-                result_text = "❌ Failed to fetch data. Please try again later."
+                result_text = f"❌ API returned status code: {response.status_code}\n\n{response.text[:500]}"
+                logger.error(f"API Error - Status: {response.status_code}, Response: {response.text}")
         
         except Exception as e:
             logger.error(f"API Error: {e}")
-            result_text = "❌ Error processing request. Please contact admin."
+            result_text = f"❌ Error: {str(e)}"
         
         keyboard = [[InlineKeyboardButton("🔙 Main Menu", callback_data="main_menu")]]
         await update.message.reply_text(result_text, reply_markup=InlineKeyboardMarkup(keyboard))
