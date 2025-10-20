@@ -75,9 +75,9 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
     
     keyboard = [
-        [InlineKeyboardButton("🔍 Lookup 1", callback_data="lookup_1"),
-         InlineKeyboardButton("🔍 Lookup 2", callback_data="lookup_2")],
-        [InlineKeyboardButton("🔍 Lookup 3", callback_data="lookup_3")],
+        [InlineKeyboardButton("📱 Aadhar Lookup", callback_data="lookup_1")],
+        [InlineKeyboardButton("📞 Number Info", callback_data="lookup_2")],
+        [InlineKeyboardButton("👨‍👩‍👧‍👦 Family Details", callback_data="lookup_3")],
         [InlineKeyboardButton("💰 My Balance", callback_data="balance"),
          InlineKeyboardButton("💳 Buy Credits", callback_data="buy_credits")],
         [InlineKeyboardButton("📖 Help", callback_data="help")]
@@ -90,6 +90,120 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         WELCOME_MESSAGE,
         reply_markup=InlineKeyboardMarkup(keyboard)
     )
+
+async def aadhar_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user = update.effective_user
+    db.add_user(user.id, user.username, user.first_name)
+    
+    if db.is_banned(user.id):
+        await update.message.reply_text("❌ You are banned from using this bot.")
+        return
+    
+    context.user_data['lookup_type'] = '1'
+    await update.message.reply_text(
+        "╔═══════════════════════╗\n"
+        "║  📱 Aadhar Lookup  ║\n"
+        "╚═══════════════════════╝\n\n"
+        "Please enter the Aadhar number:"
+    )
+    return WAITING_QUERY
+
+async def num_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user = update.effective_user
+    db.add_user(user.id, user.username, user.first_name)
+    
+    if db.is_banned(user.id):
+        await update.message.reply_text("❌ You are banned from using this bot.")
+        return
+    
+    context.user_data['lookup_type'] = '2'
+    await update.message.reply_text(
+        "╔═══════════════════════╗\n"
+        "║  📞 Number Lookup  ║\n"
+        "╚═══════════════════════╝\n\n"
+        "Please enter the phone number:"
+    )
+    return WAITING_QUERY
+
+async def familyinfo_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user = update.effective_user
+    db.add_user(user.id, user.username, user.first_name)
+    
+    if db.is_banned(user.id):
+        await update.message.reply_text("❌ You are banned from using this bot.")
+        return
+    
+    context.user_data['lookup_type'] = '3'
+    await update.message.reply_text(
+        "╔═══════════════════════╗\n"
+        "║  👨‍👩‍👧‍👦 Family Info  ║\n"
+        "╚═══════════════════════╝\n\n"
+        "Please enter the Aadhar number:"
+    )
+    return WAITING_QUERY
+
+async def balance_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user = update.effective_user
+    db.add_user(user.id, user.username, user.first_name)
+    
+    if db.is_banned(user.id):
+        await update.message.reply_text("❌ You are banned from using this bot.")
+        return
+    
+    credits = db.get_credits(user.id)
+    
+    if has_free_access(user.id):
+        balance_text = (
+            "╔══════════════════════╗\n"
+            "║  💰 YOUR BALANCE 💰  ║\n"
+            "╚══════════════════════╝\n\n"
+            "👑 Status: VIP Access\n"
+            "💎 Credits: ♾️ Unlimited\n"
+            "━━━━━━━━━━━━━━━━━━━━\n"
+            "You have unlimited free access!"
+        )
+    else:
+        balance_text = (
+            "╔══════════════════════╗\n"
+            "║  💰 YOUR BALANCE 💰  ║\n"
+            "╚══════════════════════╝\n\n"
+            f"💳 Credits: {credits}\n"
+            "━━━━━━━━━━━━━━━━━━━━\n"
+            "💵 10 Credits = ₹30\n"
+            "Use /buy to purchase more credits"
+        )
+    
+    await update.message.reply_text(balance_text)
+
+async def buy_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user = update.effective_user
+    db.add_user(user.id, user.username, user.first_name)
+    
+    if db.is_banned(user.id):
+        await update.message.reply_text("❌ You are banned from using this bot.")
+        return
+    
+    payment_text = (
+        "╔═══════════════════════╗\n"
+        "║  💳 BUY CREDITS 💳  ║\n"
+        "╚═══════════════════════╝\n\n"
+        "💰 Pricing:\n"
+        "━━━━━━━━━━━━━━━━━━━━\n"
+        "10 Credits = ₹30\n\n"
+        "📱 Payment Methods:\n"
+        "━━━━━━━━━━━━━━━━━━━━\n"
+        "• UPI: [Add UPI ID]\n"
+        "• PhonePe: [Add Number]\n"
+        "• Paytm: [Add Number]\n\n"
+        "━━━━━━━━━━━━━━━━━━━━\n"
+        "📸 After payment, send screenshot to admin\n"
+        "⏱️ Credits will be added within 24 hours"
+    )
+    
+    await update.message.reply_text(payment_text)
+
+async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text(HELP_MESSAGE)
 
 async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
@@ -104,9 +218,9 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     
     if data == "main_menu":
         keyboard = [
-            [InlineKeyboardButton("🔍 Lookup 1", callback_data="lookup_1"),
-             InlineKeyboardButton("🔍 Lookup 2", callback_data="lookup_2")],
-            [InlineKeyboardButton("🔍 Lookup 3", callback_data="lookup_3")],
+            [InlineKeyboardButton("📱 Aadhar Lookup", callback_data="lookup_1")],
+            [InlineKeyboardButton("📞 Number Info", callback_data="lookup_2")],
+            [InlineKeyboardButton("👨‍👩‍👧‍👦 Family Details", callback_data="lookup_3")],
             [InlineKeyboardButton("💰 My Balance", callback_data="balance"),
              InlineKeyboardButton("💳 Buy Credits", callback_data="buy_credits")],
             [InlineKeyboardButton("📖 Help", callback_data="help")]
@@ -122,18 +236,54 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     
     elif data == "balance":
         credits = db.get_credits(user_id)
-        status = "♾️ Unlimited" if has_free_access(user_id) else f"{credits} Credits"
+        
+        if has_free_access(user_id):
+            balance_text = (
+                "╔══════════════════════╗\n"
+                "║  💰 YOUR BALANCE 💰  ║\n"
+                "╚══════════════════════╝\n\n"
+                "👑 Status: VIP Access\n"
+                "💎 Credits: ♾️ Unlimited\n"
+                "━━━━━━━━━━━━━━━━━━━━\n"
+                "You have unlimited free access!"
+            )
+        else:
+            balance_text = (
+                "╔══════════════════════╗\n"
+                "║  💰 YOUR BALANCE 💰  ║\n"
+                "╚══════════════════════╝\n\n"
+                f"💳 Credits: {credits}\n"
+                "━━━━━━━━━━━━━━━━━━━━\n"
+                "💵 10 Credits = ₹30\n"
+                "Use /buy to purchase more credits"
+            )
         
         keyboard = [[InlineKeyboardButton("🔙 Back", callback_data="main_menu")]]
         await query.edit_message_text(
-            f"💰 Your Balance: {status}",
+            balance_text,
             reply_markup=InlineKeyboardMarkup(keyboard)
         )
     
     elif data == "buy_credits":
+        payment_text = (
+            "╔═══════════════════════╗\n"
+            "║  💳 BUY CREDITS 💳  ║\n"
+            "╚═══════════════════════╝\n\n"
+            "💰 Pricing:\n"
+            "━━━━━━━━━━━━━━━━━━━━\n"
+            "10 Credits = ₹30\n\n"
+            "📱 Payment Methods:\n"
+            "━━━━━━━━━━━━━━━━━━━━\n"
+            "• UPI: [Add UPI ID]\n"
+            "• PhonePe: [Add Number]\n"
+            "• Paytm: [Add Number]\n\n"
+            "━━━━━━━━━━━━━━━━━━━━\n"
+            "📸 After payment, send screenshot to admin\n"
+            "⏱️ Credits will be added within 24 hours"
+        )
         keyboard = [[InlineKeyboardButton("🔙 Back", callback_data="main_menu")]]
         await query.edit_message_text(
-            PAYMENT_INFO,
+            payment_text,
             reply_markup=InlineKeyboardMarkup(keyboard)
         )
     
@@ -148,9 +298,18 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         lookup_type = data.split("_")[1]
         context.user_data['lookup_type'] = lookup_type
         
+        lookup_names = {
+            "1": "📱 Aadhar Number",
+            "2": "📞 Phone Number",
+            "3": "👨‍👩‍👧‍👦 Aadhar Number (Family Info)"
+        }
+        
         keyboard = [[InlineKeyboardButton("🔙 Back", callback_data="main_menu")]]
         await query.edit_message_text(
-            f"🔍 Enter query for Lookup {lookup_type}:",
+            f"╔═══════════════════════╗\n"
+            f"║  {lookup_names.get(lookup_type, 'Query')}  ║\n"
+            f"╚═══════════════════════╝\n\n"
+            f"Please enter the {lookup_names.get(lookup_type, 'query')}:",
             reply_markup=InlineKeyboardMarkup(keyboard)
         )
         return WAITING_QUERY
@@ -385,15 +544,31 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
             logger.info(f"API Response: {response.text[:200]}")
             
             if response.status_code == 200:
-                result_text = f"✅ Results for: {text}\n\n"
-                result_text += f"{response.text[:4000]}"
+                lookup_names = {
+                    "1": "📱 Aadhar Lookup",
+                    "2": "📞 Number Info",
+                    "3": "👨‍👩‍👧‍👦 Family Details"
+                }
+                
+                result_text = f"╔══════════════════════════╗\n"
+                result_text += f"║  {lookup_names.get(lookup_type, 'Results')}  ║\n"
+                result_text += f"╚══════════════════════════╝\n\n"
+                result_text += f"🔍 Query: {text}\n"
+                result_text += f"━━━━━━━━━━━━━━━━━━━━━━\n\n"
+                result_text += f"{response.text[:3500]}\n\n"
+                result_text += f"━━━━━━━━━━━━━━━━━━━━━━\n"
                 
                 if not has_free_access(user_id):
                     db.deduct_credits(user_id, CREDITS_PER_QUERY, f"Lookup {lookup_type}")
                     remaining = db.get_credits(user_id)
-                    result_text += f"\n\n💰 Credits remaining: {remaining}"
+                    result_text += f"💰 Credits Remaining: {remaining}"
+                else:
+                    result_text += f"👑 Unlimited Access"
             else:
-                result_text = f"❌ API returned status code: {response.status_code}\n\n{response.text[:500]}"
+                result_text = f"╔══════════════════╗\n"
+                result_text += f"║  ❌ ERROR ❌  ║\n"
+                result_text += f"╚══════════════════╝\n\n"
+                result_text += f"Status Code: {response.status_code}\n\n{response.text[:500]}"
                 logger.error(f"API Error - Status: {response.status_code}, Response: {response.text}")
         
         except Exception as e:
@@ -608,6 +783,12 @@ def main():
     
     application.add_handler(conv_handler)
     application.add_handler(CommandHandler("start", start))
+    application.add_handler(CommandHandler("aadhar", aadhar_command))
+    application.add_handler(CommandHandler("num", num_command))
+    application.add_handler(CommandHandler("familyinfo", familyinfo_command))
+    application.add_handler(CommandHandler("balance", balance_command))
+    application.add_handler(CommandHandler("buy", buy_command))
+    application.add_handler(CommandHandler("help", help_command))
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
     
     logger.info("Bot started successfully!")
