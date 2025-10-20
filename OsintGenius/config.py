@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-BOT_TOKEN = os.getenv('BOT_TOKEN', '')
+BOT_TOKEN = os.getenv('BOT_TOKEN', '7927707262:AAHU_M12R7HSS1lieEn96jV_biAEi_W40jU')
 
 OWNER_ID = 5455135289
 SUDO_IDS = [7905267752]
